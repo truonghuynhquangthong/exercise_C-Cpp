@@ -22,5 +22,3 @@ int main(void)
   printf("%.3f", total(4, 2.5, 3, 4, 5.0));
   return 0;
 }
-
-// 0911866615
