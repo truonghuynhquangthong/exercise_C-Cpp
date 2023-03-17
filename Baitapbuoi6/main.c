@@ -2,17 +2,25 @@
 #include <stdlib.h>
 #include <stdio.h>
 uint8_t CART;
-#define show(CART, ITEM, item, TempVar) \
-  if ((CART &= ITEM) == ITEM)           \
-  {                                     \
-    printf(item);                       \
-  }                                     \
-  CART = TempVar;
-#define check(CART, ITEM, item) \
-  if ((CART &= ITEM) == ITEM)   \
-  {                             \
-    printf(item);               \
+#define show(ITEM, item, TempVar) \
+  if ((*CART &= ITEM) == ITEM)    \
+  {                               \
+    printf(item);                 \
+  }                               \
+  *CART = TempVar;
+#define check(ITEM, item)      \
+  if ((*CART &= ITEM) == ITEM) \
+  {                            \
+    printf(item);              \
   }
+
+#define if_case(item, text) \
+  {                         \
+  case item:                \
+    printf(text);           \
+    break;                  \
+  }
+
 typedef enum
 {
   SHIRT = 1 << 0,    // 0b00000001
@@ -28,27 +36,13 @@ void conver_enum_to_text(PERSONAL_BELONGINGS item_name)
 {
   switch (item_name)
   {
-
-  case TROUSERS:
-    printf("trousers");
-    break;
-  case DRESS:
-    printf("dress");
-    break;
-  case BAG:
-    printf("bag");
-    break;
-  case RING:
-    printf("ring");
-    break;
-  case BRACELET:
-    printf("bracelet");
-    break;
-  case SHOES:
-    printf("shoes");
-    break;
-  default:
-    break;
+    if_case(SHIRT, "shirt");
+    if_case(DRESS, "dress");
+    if_case(BAG, "bag");
+    if_case(RING, "ring");
+    if_case(BRACELET, "bracelet");
+    if_case(SHOES, "shoes");
+    if_case(GLASSES, "glasses");
   }
 }
 void insert_item_for_cart(uint8_t *CART, PERSONAL_BELONGINGS item_name)
@@ -59,14 +53,14 @@ void show_item(uint8_t *CART)
 {
   uint8_t Temp = *CART;
   printf(">>> The Cart include: ");
-  show(*CART, SHIRT, "shirt ", Temp);
-  show(*CART, TROUSERS, "trousers ", Temp);
-  show(*CART, DRESS, "dress ", Temp);
-  show(*CART, BAG, "bag ", Temp);
-  show(*CART, BRACELET, "bracelet ", Temp);
-  show(*CART, SHOES, "shoes ", Temp);
-  show(*CART, GLASSES, "glasses ", Temp);
-  show(*CART, RING, "ring ", Temp);
+  show(SHIRT, "shirt ", Temp);
+  show(TROUSERS, "trousers ", Temp);
+  show(DRESS, "dress ", Temp);
+  show(BAG, "bag ", Temp);
+  show(BRACELET, "bracelet ", Temp);
+  show(SHOES, "shoes ", Temp);
+  show(GLASSES, "glasses ", Temp);
+  show(RING, "ring ", Temp);
 }
 void delete_item(uint8_t *CART, PERSONAL_BELONGINGS item_name)
 {
@@ -90,17 +84,16 @@ void check_item_for_cart(uint8_t *CART, PERSONAL_BELONGINGS item_name)
   uint8_t test = *CART & item_name;
   printf(">>> Check the ");
   conver_enum_to_text(item_name);
-  check(*CART, SHIRT, "-> The cart has shirt ");
-  check(*CART, TROUSERS, "-> The cart has trousers ");
-  check(*CART, DRESS, "-> The cart has dress ");
-  check(*CART, BAG, "-> The cart has bag ");
-  check(*CART, BRACELET, "-> The cart has brecelet ");
-  check(*CART, SHOES, "-> The cart has shoes ");
-  check(*CART, GLASSES, "-> The cart has glasses ");
-  check(*CART, RING, "-> The cart has ring ");
+  check(SHIRT, "-> The cart has shirt ");
+  check(TROUSERS, "-> The cart has trousers ");
+  check(DRESS, "-> The cart has dress ");
+  check(BAG, "-> The cart has bag ");
+  check(BRACELET, "-> The cart has brecelet ");
+  check(SHOES, "-> The cart has shoes ");
+  check(GLASSES, "-> The cart has glasses ");
+  check(RING, "-> The cart has ring ");
   *CART = Temp;
 }
-
 int main(void)
 {
   insert_item_for_cart(&CART, RING | SHIRT | SHOES | DRESS | BAG);
