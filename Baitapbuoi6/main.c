@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 uint8_t CART;
+
 #define show(ITEM, item, TempVar) \
   if ((*CART &= ITEM) == ITEM)    \
   {                               \
@@ -32,6 +33,7 @@ typedef enum
   SHOES = 1 << 6,    // 0b01000000
   BAG = 1 << 7,      // 0b10000000
 } PERSONAL_BELONGINGS;
+
 void conver_enum_to_text(PERSONAL_BELONGINGS item_name)
 {
   switch (item_name)

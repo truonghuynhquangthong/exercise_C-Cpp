@@ -1,71 +1,94 @@
 /*
  * File: linked_List.c
- * Author: Thông Trương
- * Date: 02/01/2003
- * Description: Tạo 1 linked list với chức năng thêm, xóa, sửa
+ * Author: Thong Truong
+ * Date: 26/3/2023
+ * Description: Create linked list with delete and edit function
  */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
 
-// Description: Tạo 1 struct và con trỏ struct để lưu và liên kết các giá trị của list
+/* Description: create struct to link nodes into a list */
 typedef struct node
 {
+
     uint8_t data;
     struct node *next;
-}node;
+
+} node;
 
 /*
  * Function: push_Back
- * Description: Thêm phần tử vào linked list bằng cách tạo thêm node
+ * Description: Function is designed to add node to linked list
  * Input:
- *   *arr 
- *   data - giá trị của node cần thêm
+ *   **arr - use pointer to pointer to be able to create multiple lists
+ *   data - value to add to the link
  */
-void push_Back(node *arr, uint8_t data) {
-    node *newNode = (node *)malloc(sizeof(node));  // Khởi tạo 1 node mới
-    newNode->data = data;
-    newNode->next = NULL;
+static void pushBack(node **arr, uint8_t data)
+{
 
-    if (arr->next == NULL) {                       // Tạo 1 node đâu tiên
-        arr->next = newNode;
-        return;
-    }
-
-    node *p = arr->next;
-    while (p->next != NULL)
-        p = p->next;
-    p->next = newNode;                             // Liên kết với địa chỉ của node kế tiếp
-}
-
-/*
- * Function: assign
- * Description: Thay đổi giá trị tại 1 vị trí được chỉ định
- * Input:
- *   *arr 
- *   data - giá trị của node mới
- *   index - vị trí chỉ định
- */
-void assign(node *arr, uint8_t index, uint8_t data) {
-    printf("Thay the phan tu tai vi tri %d = %d:\n", index, data);
+    /* Dynamically allocate 1 new address */
     node *newNode = (node *)malloc(sizeof(node));
     newNode->data = data;
     newNode->next = NULL;
 
-    if (arr->next == NULL) {
-        arr->next = newNode;
-        return;
-    }
+    /* Initial node initialization condition */
+    if (*arr == NULL)
+        *arr = newNode;
 
-    node *p = arr->next;
-    uint8_t i = 0;          // Khởi tạo 1 biến đém để xát định vị trí index truyền vào
-    while (p->next != NULL) {
+    else
+    {
+
+        node *p = *arr;
+        while (p->next != NULL)
+            p = p->next;
+
+        /* Link to newNode */
+        p->next = newNode;
+    }
+}
+
+/*
+ * Function: assign
+ * Description: Function is designed to change the value at the specified location
+ * Input:
+ *   *arr - use pointer to pointer to be able to replace the value of multiple lists
+ *   data - Pass in the value to be replaced
+ *   index - location to be replaced
+ */
+static void assign(node **arr, uint8_t index, uint8_t data)
+{
+
+    printf("Replace the value at position %d = %d:\n", index, data);
+    node *newNode = (node *)malloc(sizeof(node));
+    newNode->data = data;
+    newNode->next = NULL;
+
+    /* Create counter variable to determine index */
+    uint8_t i = 0;
+
+    /* Create a pointer to save first node */
+    node *p = *arr;
+
+    while (p->next != NULL)
+    {
+
         i++;
-        if(i == index) {
-            node *p2 = p->next;            // Khởi tạo địa chỉ của node cần thay đổi giá trị
-            p->next = newNode;             // Liên kết node với địa chỉ của node mới 
-            newNode->next = p2->next;      // Liên kết node mới với địa chỉ của node phía sau
-            free(p2);                      // Xóa node cũ 
+        if (i == index)
+        {
+
+            /* Create pointer to save the replaced node address */
+            node *p2 = p->next;
+
+            /* Assign newNode address to the replaced node address */
+            p->next = newNode;
+
+            /* link newNode to next node */
+            newNode->next = p2->next;
+
+            /* Delete replaced node address */
+            free(p2);
             return;
         }
         p = p->next;
@@ -74,21 +97,34 @@ void assign(node *arr, uint8_t index, uint8_t data) {
 
 /*
  * Function: erase
- * Description: Xóa node chỉ định
+ * Description: Function is designed to delete the specified node
  * Input:
- *   *arr 
- *   index - vị trí chỉ định
+ *   **arr - use pointer to pointer to be able to delete designated node
+ *   index - designated location
  */
-void erase(node *arr, uint8_t index) {
-    printf("Xoa phan tu tai vi tri %d:\n", index);
-    node *p = arr->next;
-    uint8_t i = 0;         
-    while (p->next != NULL) {
+static void erase(node **arr, uint8_t index)
+{
+
+    printf("Delete data at location %d:\n", index);
+
+    uint8_t i = 0;
+    node *p = *arr;
+
+    while (p->next != NULL)
+    {
+
         i++;
-        if(i == index) {
-            node *p2 = p->next;   // Khởi tạo địa chỉ của node cần xóa
-            p->next = p2->next;   // Liên kết với node phía sau
-            free(p2);             // Xóa node cần xóa
+        if (i == index)
+        {
+
+            /* Create a pointer to save the node address to delete */
+            node *p2 = p->next;
+
+            /* Assign the address of the next node to the node to delete */
+            p->next = p->next->next;
+
+            /* Delete node to delete */
+            free(p2);
             return;
         }
         p = p->next;
@@ -97,17 +133,24 @@ void erase(node *arr, uint8_t index) {
 
 /*
  * Function: pop_Back
- * Description: Xóa node cuối cùng của list
+ * Description: Function is designed to delete the last node of the list
  * Input:
- *   *arr
+ *   **arr
  */
-void pop_Back(node *arr) {
-    printf("Xoa phan tu cuoi cung:\n");
-    node *p = arr->next;
-    while (p->next != NULL) {
-        if (p->next->next == NULL) {    // Xát định vị trí node cuối cùng
-            free(p->next);              // xóa node cuối cùng
-            p->next = NULL;             // Liên kết node thứ (n-1) với Null => trở thành node cuối cùng  
+static void popBack(node **arr)
+{
+
+    printf("Delete the last data of the list:\n");
+    node *p = *arr;
+    while (p->next != NULL)
+    {
+
+        if (p->next->next == NULL)
+        {
+
+            /* Đelete the last node of the list */
+            free(p->next);
+            p->next = NULL;
             return;
         }
         p = p->next;
@@ -115,84 +158,162 @@ void pop_Back(node *arr) {
 }
 
 /*
- * Function: push_Back
- * Description: Xóa tất cả các node
- *   *arr 
+ * Function: clear
+ * Description: Function is designed to delete all nodes
+ *   **arr
  */
-void clear(node *arr) {
-    printf("Xoa tat ca phan tu ...\n");
-    node *p = arr->next;
-    while (p->next != NULL) {
-        p = p->next;
-        free(arr->next);            // Xóa node đầu tiên
-        arr->next = p;              // Liên kết với node thứ 2 => node thứ 2 trở thành node đầu tiên
+static void clear(node **arr)
+{
+
+    printf("Delete all data ...\n");
+    while ((*arr)->next != NULL)
+    {
+
+        /* Mark node position 1 */
+        node *p = (*arr)->next;
+
+        /* Assign the address of the next node to the node to delete */
+        (*arr)->next = (*arr)->next->next;
+        free(p);
     }
-    free(arr->next);                // Xóa node cuối cùng   
-    arr->next = NULL;               
 }
 
 /*
  * Function: get_Data
- * Description: Tìm giá trị tại node được chỉ định
+ * Description: Function is designed to get the specified
  * Input:
- *   *arr 
- *   index - vị trí chỉ định
+ *   **arr
+ *   index - designated location
  * Output:
- *   giá trị tại vị trí index
- *   0 : nếu nhập vị trí không hợp lệ
+ *   Data
  */
-uint8_t get_Data(node *arr, uint8_t index) {
-    printf("Phan tu tai vi tri %d: ", index);
-    node *p = arr->next;
-    uint8_t temp = 0;                        // Khởi tạo biến đém để xát định vị trí index
-    while (p->next != NULL) {
-        if (index == temp) return p->data;   // Trả về kết quả tại vị trí index
+static void getData(node **arr, uint8_t index)
+{
+
+    printf("Data at location %d: ", index);
+    node *p = *arr;
+    uint8_t temp = 0;
+
+    while (p != NULL)
+    {
+
+        /* Find the disignated location to print data */
+        if (index == temp)
+        {
+            printf("%d\n", p->data);
+            break;
+        }
+
         p = p->next;
         temp++;
     }
-    printf("Nhap vi tri khong hop le: ");    
-    return 0;                                // Với index nhập không hợp lệ trả về kết quả 0
 }
 
 /*
- * Function: prin
- * Description: In tất cả các giá trị có trong list
+ * Function: printLish
+ * Description: Function is designed to print data in list
  * Input:
- *   *arr 
+ *   *arr
  */
-void prin(node *arr) {
-    for (node *p = arr->next; p != NULL; p = p->next) {
+static void printLish(node *arr)
+{
+
+    printf("%d\n", arr->data);
+    for (node *p = arr->next; p != NULL; p = p->next)
+    {
         printf("%d\n", p->data);
     }
 }
 
+/* Description: Create struct to initialize the functions pointer, as a vector */
+typedef struct
+{
+
+    void (*pushBackInit)(node **, uint8_t);
+    void (*assignInit)(node **, uint8_t, uint8_t);
+    void (*eraseInit)(node **, uint8_t);
+    void (*popBackInit)(node **);
+    void (*clearInit)(node **);
+    void (*getDataInit)(node **, uint8_t);
+    void (*printLishInit)(node *);
+    node *nodeInit;
+
+} vector;
+
+/*
+ * Description: use vector assignment of functions pointer
+ * initialized in struct with corresponding functions
+ */
+void vectorInit(vector *value)
+{
+
+    value->nodeInit = NULL;
+    value->pushBackInit = &pushBack;
+    value->assignInit = &assign;
+    value->eraseInit = &erase;
+    value->popBackInit = &popBack;
+    value->clearInit = &clear;
+    value->getDataInit = &getData;
+    value->printLishInit = &printLish;
+}
+
 /*
  * Function: main
- * Description: Thao tác chỉnh sửa với list
+ * Description: Operations for creating and editing data in a list
  */
 int main()
 {
-    node arr = {0, NULL};
-    printf("Cac gia tri trong mang:\n");
-    push_Back(&arr, 2);
-    push_Back(&arr, 17);
-    push_Back(&arr, 9);
-    push_Back(&arr, 8);
-    prin(&arr);
 
-    assign(&arr, 2, 12);
-    prin(&arr);
+    /* Initialize the lists */
+    vector array1, array2;
 
-    erase(&arr, 1);
-    prin(&arr);
+    /* Operation with lish 1 */
+    vectorInit(&array1);
+    printf("Linked list 1:\n");
+    array1.pushBackInit(&array1.nodeInit, 1);
+    array1.pushBackInit(&array1.nodeInit, 2);
+    array1.pushBackInit(&array1.nodeInit, 3);
+    array1.pushBackInit(&array1.nodeInit, 4);
+    array1.pushBackInit(&array1.nodeInit, 5);
+    array1.printLishInit(array1.nodeInit);
 
-    pop_Back(&arr);
-    prin(&arr);
+    array1.assignInit(&array1.nodeInit, 1, 4);
+    array1.printLishInit(array1.nodeInit);
 
-    printf("%d\n", get_Data(&arr, 2));
+    array1.eraseInit(&array1.nodeInit, 1);
+    array1.printLishInit(array1.nodeInit);
 
-    clear(&arr);
-    prin(&arr);
+    array1.popBackInit(&array1.nodeInit);
+    array1.printLishInit(array1.nodeInit);
 
-    return(0);
+    array1.getDataInit(&array1.nodeInit, 2);
+
+    array1.clearInit(&array1.nodeInit);
+    array1.printLishInit(array1.nodeInit);
+
+    /* Operation with lish 1 */
+    vectorInit(&array2);
+    printf("\n\nLinked list 2:\n");
+    array2.pushBackInit(&array2.nodeInit, 6);
+    array2.pushBackInit(&array2.nodeInit, 7);
+    array2.pushBackInit(&array2.nodeInit, 8);
+    array2.pushBackInit(&array2.nodeInit, 9);
+    array2.pushBackInit(&array2.nodeInit, 10);
+    array2.printLishInit(array2.nodeInit);
+
+    array2.assignInit(&array2.nodeInit, 3, 4);
+    array2.printLishInit(array2.nodeInit);
+
+    array2.eraseInit(&array2.nodeInit, 2);
+    array2.printLishInit(array2.nodeInit);
+
+    array2.popBackInit(&array2.nodeInit);
+    array2.printLishInit(array2.nodeInit);
+
+    array2.getDataInit(&array2.nodeInit, 2);
+
+    array2.clearInit(&array2.nodeInit);
+    array2.printLishInit(array2.nodeInit);
+
+    return 0;
 }
